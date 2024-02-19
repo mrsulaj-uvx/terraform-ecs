@@ -8,7 +8,7 @@ data "aws_region" "current" {
   current = true
 }
 
-data "template_file" "ecs_task_stopped" {
+data "templatefile" "ecs_task_stopped" {
   template = <<EOF
 {
   "source": ["aws.ecs"],
@@ -31,7 +31,7 @@ EOF
 resource "aws_cloudwatch_event_rule" "ecs_task_stopped" {
   name          = "${var.environment}_${var.cluster}_task_stopped"
   description   = "${var.environment}_${var.cluster} Essential container in task exited"
-  event_pattern = data.template_file.ecs_task_stopped.rendered
+  event_pattern = data.templatefile.ecs_task_stopped.rendered
 }
 
 resource "aws_cloudwatch_event_target" "event_fired" {

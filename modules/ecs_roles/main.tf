@@ -11,7 +11,7 @@ data "aws_region" "current" {
   current = true
 }
 
-data "template_file" "policy" {
+data "templatefile" "policy" {
   template = "${file("aws_caller_identity.json")}"
 
   vars {
@@ -25,7 +25,7 @@ resource "aws_iam_policy" "ecs_default_task" {
   name = "${var.environment}_${var.cluster}_ecs_default_task"
   path = "/"
 
-  policy = data.template_file.policy.rendered
+  policy = data.templatefile.policy.rendered
 }
 
 resource "aws_iam_policy_attachment" "ecs_default_task" {
