@@ -49,7 +49,7 @@ resource "aws_launch_configuration" "launch" {
   image_id             = var.aws_ami != "" ? var.aws_ami : data.aws_ami.latest_ecs_ami.image_id
   instance_type        = var.instance_type
   security_groups      = ["${aws_security_group.instance.id}"]
-  user_data            = templatefile("${file("${path.module}/templates/user_data.sh")}", {
+  user_data            = templatefile("${path.module}/templates/user_data.sh", {
     ecs_config        = var.ecs_config
     ecs_logging       = var.ecs_logging
     cluster_name      = var.cluster

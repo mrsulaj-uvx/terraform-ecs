@@ -15,7 +15,7 @@ resource "aws_iam_policy" "ecs_default_task" {
   name = "${var.environment}_${var.cluster}_ecs_default_task"
   path = "/"
 
-  policy = templatefile("${file("aws_caller_identity.json")}", {
+  policy = templatefile("aws_caller_identity.json", {
     account_id = data.aws_caller_identity.current.account_id
     prefix     = var.prefix
     aws_region = data.aws_region.current.name
