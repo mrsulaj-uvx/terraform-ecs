@@ -11,21 +11,15 @@ data "aws_region" "current" {
   current = true
 }
 
-data "templatefile" "policy" {
-  template = "${file("aws_caller_identity.json")}"
-
-  vars {
-    account_id = data.aws_caller_identity.current.account_id
-    prefix     = var.prefix
-    aws_region = data.aws_region.current.name
-  }
-}
-
 resource "aws_iam_policy" "ecs_default_task" {
   name = "${var.environment}_${var.cluster}_ecs_default_task"
   path = "/"
 
-  policy = data.templatefile.policy.rendered
+  policy = templatefile("${file("aws_caller_identity.json")}", {
+    account_id = data.aws_caller_identity.current.account_id
+    prefix     = var.prefix
+    aws_region = data.aws_region.current.name
+  })
 }
 
 resource "aws_iam_policy_attachment" "ecs_default_task" {

@@ -49,7 +49,14 @@ resource "aws_launch_configuration" "launch" {
   image_id             = var.aws_ami != "" ? var.aws_ami : data.aws_ami.latest_ecs_ami.image_id
   instance_type        = var.instance_type
   security_groups      = ["${aws_security_group.instance.id}"]
-  user_data            = data.templatefile.user_data.rendered
+  user_data            = templatefile("${file("${path.module}/templates/user_data.sh")}", {
+    ecs_config        = var.ecs_config
+    ecs_logging       = var.ecs_logging
+    cluster_name      = var.cluster
+    env_name          = var.environment
+    custom_userdata   = var.custom_userdata
+    cloudwatch_prefix = var.cloudwatch_prefix
+  })
   iam_instance_profile = var.iam_instance_profile_id
   key_name             = var.key_name
 
@@ -102,18 +109,5 @@ resource "aws_autoscaling_group" "asg" {
     key                 = "DependsId"
     value               = var.depends_id
     propagate_at_launch = "false"
-  }
-}
-
-data "templatefile" "user_data" {
-  template = "${file("${path.module}/templates/user_data.sh")}"
-
-  vars = {
-    ecs_config        = var.ecs_config
-    ecs_logging       = var.ecs_logging
-    cluster_name      = var.cluster
-    env_name          = var.environment
-    custom_userdata   = var.custom_userdata
-    cloudwatch_prefix = var.cloudwatch_prefix
   }
 }
